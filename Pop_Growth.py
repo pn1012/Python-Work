@@ -12,6 +12,6 @@ with open('/Users/patrickcorynichols/Projects/Thinkful/lecz-urban-rural-populati
             population_dict[line[0]] += float(line[6] - line[5])
 
 with open('/Users/patrickcorynichols/Projects/Thinkful/national_population.csv', 'w') as outputFile:
-    outputFile.write('continent,2010_population\n')
+    outputFile.write('continent,Pop_Growth\n')
     for k, v in population_dict.iteritems():
         outputFile.write(k + ',' + str(v) + '\n')

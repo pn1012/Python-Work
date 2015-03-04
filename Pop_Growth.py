@@ -1,17 +1,20 @@
 import collections
-population_dict = collections.defaultdict(int)
 
-with open('/Users/patrickcorynichols/Projects/Thinkful/lecz-urban-rural-population-land-area-estimates_continent-90m.csv','rU') as inputFile:
-    header = next(inputFile)
+pop_dict = collections.defaultdict(int)
+land_dict = collections.defaultdict(int)
+density_dict = collections.defaultdict(int)
 
-    for line in inputFile:
+with open('/Users/patrickcorynichols/Projects/Thinkful/Lesson1_Ex6/lecz-urban-rural-population-land-area-estimates_continent-90m.csv','rU') as inputfile:
+    header = next(inputfile)    
+    for line in inputfile:
         line = line.rstrip().split(',')
-        line[5] = int(line[5])
-        line[7] = int(line[7])
-        if line[1] == 'Total National Population':
-            population_dict[line[0]] += float(line[5])/float(line[7])
+        line[5] = float(line[5])
+        line[7] = float(line[7])
+        if line[1] == 'Total National Population': 
+            pop_dict[line[0]] += line[5]
+            land_dict[line[0]] += line[7]
 
-with open('/Users/patrickcorynichols/Projects/Thinkful/national_population_density.csv', 'w') as outputFile:
-    outputFile.write('continent,Pop_Growth\n')
-    for k, v in population_dict.iteritems():
-        outputFile.write(k + ',' + str(v) + '\n')
+    
+for j in range(len(pop_dict)):
+     density_dict.update({pop_dict.keys()[j]:float(pop_dict.values()[j]/land_dict.values()[j])})
+print density_dict

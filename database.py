@@ -1,39 +1,62 @@
 import pandas as pd
 import sqlite3 as lite
 
-month = str(input("What month?")
+#month = str(input("What month?")
 
-months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+#months = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
-
-if month in months:
-
-    cities = (("San Francisco","CA"),("Austin", "TX"),("Dallas","TX"),("New York City","NY"),("Los Angeles","CA"))
-    weather = (("San Francisco","January", "July",72),("Austin", "December","August",81),("Dallas", "December","August",79),
-           ("New York City","January","May",68),("Los Angeles","December","July",71))
-#connect to the database
-
-    con = lite.connect('/users/patrickcorynichols/getting_started.db')
-    with con:
-        cur = con.cursor()
-        cur.execute("DROP TABLE IF EXISTS cities")
-        cur.execute("DROP TABLE IF EXISTS weather")
-        cur.execute("CREATE TABLE cities(name text, state text)")
-        cur.execute("CREATE TABLE weather(city text, cold_month text, hot_month text, avg_temp integer)")
-        cur.executemany("INSERT INTO cities VALUES(?,?)", cities)
-        cur.executemany("INSERT INTO weather VALUES(?,?,?,?)",weather)
-        data = cur.execute("SELECT name, state, cold_month, hot_month, avg_temp FROM cities LEFT JOIN weather ON name = city where \
-        hot_month = " + "'" + str(month) + "'" +" ORDER BY avg_temp DESC").fetchall()
-        columns = [desc[0] for desc in cur.description]
-        dframe = pd.DataFrame(data, columns = columns)
+con = lite.connect('/users/patrickcorynichols/getting_started.db')
+cur = con.cursor()
 
 
-    print "The cities that are warmest in July are:", 
+populate_cities = """
+INSERT INTO cities (name, state) VALUES
+    ('New York City', 'NY'),
+    ('Boston', 'MA'),
+    ('Chicago', 'IL'),
+    ('Miami', 'FL'),
+    ('Dallas', 'TX'),
+    ('Seattle', 'WA'),
+    ('Portland', 'OR'),
+    ('San Francisco', 'CA'),
+    ('Los Angeles', 'CA');
+"""
+populate_weather = """
+INSERT INTO weather (city,year,warm_month,cold_month,average_high) VALUES
+    ('New York City',2013,'July','January',62),
+    ('Boston',2013,'July','January',59),
+    ('Chicago',2013,'July','January',59),
+    ('Miami',2013,'August','January',84),
+    ('Dallas',2013,'July','January',77),
+    ('Seattle',2013,'July','January',61),
+    ('Portland',2013,'July','December',63),
+    ('San Francisco',2013,'September','December',64),
+    ('Los Angeles',2013,'September','December',75);
+"""
 
-    for name in dframe['name']:
-        print name,',',
 
-else: print 'Not a valid month'
 
-#print 'The cities that are warmest in July are:', 
-#   dframe['name'][0]
+cur.execute("DROP TABLE IF EXISTS cities")
+cur.execute("CREATE TABLE cities (name text, state text)")
+cur.execute("DROP TABLE IF EXISTS weather")
+cur.execute("CREATE TABLE weather (city text,year integer,warm_month text,cold_month text,average_high integer)")
+
+# populate data
+cur.execute(populate_weather)
+cur.execute(populate_cities)
+
+month = 'July'
+
+""" Load into pandas data-frame"""
+query = " SELECT city, year, warm_month, average_high FROM weather LEFT JOIN cities on city = name WHERE warm_month = " + "'" + month + "'"
+
+data = pd.read_sql(query,con)
+
+print 'The warmest cities in July are:', ', '.join(data['city'])
+
+
+
+
+
+
+

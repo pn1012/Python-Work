@@ -44,7 +44,7 @@ def main():
 
     month = 'July'
 
-    """ Load into pandas data-frame"""
+    # load data into pandas dataframe
     query = " SELECT city, year, warm_month, average_high FROM weather LEFT JOIN cities on city = name WHERE warm_month = " + "'" + month + "'"
 
     data = pd.read_sql(query,con)

@@ -1,1 +1,1 @@
-print 'Hello World, my name is Arnold, Arnold Schwarzenegger'
+print 'Hello World, I\'m becoming a git ninja!'
